@@ -454,29 +454,44 @@ function getNewNote() {
         colors: ['#ff4d6d', '#ff8fa3']
     });
 }
+let audioContextResumed = false;
+
 function toggleMusic() {
     const audio = document.getElementById('bg-music');
     const btn = document.getElementById('musicBtn');
-    const hint = document.getElementById('music-hint'); // Get the hint
-    
-    if (isPlaying) {
+    const hint = document.getElementById('music-hint');
+
+    // FIX: Force the browser to acknowledge the sound engine
+    if (!audioContextResumed) {
+        const AudioContext = window.AudioContext || window.webkitAudioContext;
+        const audioCtx = new AudioContext();
+        audioCtx.resume();
+        audioContextResumed = true;
+    }
+
+    if (audio.paused) {
+        // We use a promise to handle the play state correctly
+        audio.play().then(() => {
+            btn.classList.add('music-rotating');
+            if(hint) {
+                hint.style.opacity = '0';
+                setTimeout(() => hint.remove(), 500);
+            }
+        }).catch(err => {
+            console.log("Wait for user interaction", err);
+            // Fallback: If it fails, try a 'muted' play then unmute (common mobile bypass)
+            audio.muted = true;
+            audio.play();
+            setTimeout(() => { audio.muted = false; }, 100);
+        });
+    } else {
         audio.pause();
         btn.classList.remove('music-rotating');
-    } else {
-        audio.play();
-        btn.classList.add('music-rotating');
-        
-        // CUTE TWEAK: Hide the hint once she clicks!
-        if(hint) {
-            hint.style.opacity = '0';
-            setTimeout(() => hint.remove(), 500);
-        }
     }
-    isPlaying = !isPlaying;
 }
-
        
     </script>
 </body>
 
 </html>
+
