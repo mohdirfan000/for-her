@@ -49,6 +49,17 @@
         .music-rotating { animation: spin 4s linear infinite; }
         @keyframes spin { 100% { transform: rotate(360deg); } }
 
+        #progress-bar {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 0%;
+            height: 5px;
+            background: var(--primary);
+            z-index: 10001;
+            transition: width 0.1s ease;
+    }
+
         /* --- NEW KEN BURNS HERO SLIDESHOW --- */
         .hero {
             position: relative;
@@ -214,7 +225,7 @@
     </style>
 </head>
 <body>
-
+    <div id="progress-bar"></div>
     <audio id="bg-music" loop>
         <source src="audio.mp3" type="audio/mpeg">
     </audio>
@@ -354,6 +365,12 @@
 </section>
 
     <script>
+        window.onscroll = function() {
+            const winScroll = document.body.scrollTop || document.documentElement.scrollTop;
+            const height = document.documentElement.scrollHeight - document.documentElement.clientHeight;
+            const scrolled = (winScroll / height) * 100;
+            document.getElementById("progress-bar").style.width = scrolled + "%";
+};
         // TYPEWRITER
         var app = document.getElementById('app');
         var typewriter = new Typewriter(app, { loop: true, delay: 75 });
@@ -461,4 +478,5 @@ function toggleMusic() {
        
     </script>
 </body>
+
 </html>
